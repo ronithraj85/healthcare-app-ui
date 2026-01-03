@@ -8,7 +8,7 @@
 
 This is the frontend for the Healthcare App. It provides a responsive, role-based dashboard for patients and admins.
 
-Live Demo: [Healthcare App UI](https://healthcare-app-ui-ivory.vercel.app/)
+Live Demo: https://healthcare-app-ui-ivory.vercel.app/
 
 ## 🚀 Features
 - Role-based navigation (Admin, User)
@@ -28,3 +28,7 @@ Live Demo: [Healthcare App UI](https://healthcare-app-ui-ivory.vercel.app/)
 1. Clone the repo:
    ```bash
    git clone https://github.com/your-username/healthcare-ui.git
+
+Once the repo is cloned,
+Do , npm install and npm run dev
+UI will be available at http://localhost:5173.
