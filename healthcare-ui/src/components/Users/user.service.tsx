@@ -1,7 +1,7 @@
 import axios from "axios";
 import type UserResponseDto from "../../types/UserResponseDto";
 
-const API_USER_URL = "http://localhost:8181/api/users";
+const API_USER_URL = "https://healthcare-clinic-app.onrender.com/api/users";
 
 // Get Users service
 export const getUsers = async (): Promise<UserResponseDto[]> => {
