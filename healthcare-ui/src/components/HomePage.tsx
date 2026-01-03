@@ -4,7 +4,7 @@ import { AiFillHome } from "react-icons/ai";
 import PatientsPage from "./Patients/PatientsPage";
 import DoctorsPage from "./Doctor/DoctorsPage";
 import UsersPage from "./Users/UsersPage";
-import AppointmentsPage from "./Appointments/AppointmentsPAge";
+import AppointmentsPage from "./Appointments/AppointmentsPage";
 
 // Utility to decode JWT payload
 function parseJwt(
