@@ -31,7 +31,6 @@ export default function AddAdminPage() {
       setAdminaddedMessage(`User added successfully!`);
       setTimeout(() => {
         setAdminaddedMessage("");
-        window.location.reload();
       }, 3000);
     } catch {
       console.log("Adding user failed. Please try again after sometime!");

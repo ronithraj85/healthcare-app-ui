@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 
-const AddPatient = () => {
+const AddPatient = ({ refreshCall }) => {
   const [form, setForm] = useState({
     name: "",
     mobile: "",
@@ -25,8 +25,8 @@ const AddPatient = () => {
       setPatientAdded(`Patient added successfully!`);
       setTimeout(() => {
         setPatientAdded("");
-        window.location.reload();
       }, 3000);
+      refreshCall();
     } catch {
       console.log("Adding patient failed. Please try again after sometime!");
     }

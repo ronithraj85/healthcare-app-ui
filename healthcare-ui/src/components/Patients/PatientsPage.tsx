@@ -13,16 +13,17 @@ const PatientsPage = () => {
     useState<PatientResponseDto | null>(null);
   const [formData, setFormData] = useState<Partial<PatientResponseDto>>({});
 
+  const fetchPatients = async () => {
+    try {
+      const pats = await getPatients();
+      setPatients(pats);
+      setLoading(false);
+    } catch (err) {
+      console.log("Error in patients main while fetch the patients-", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const pats = await getPatients();
-        setPatients(pats);
-        setLoading(false);
-      } catch (err) {
-        console.log("Error in patients main while fetch the patients-", err);
-      }
-    };
     fetchPatients();
   }, []);
 
@@ -135,7 +136,7 @@ const PatientsPage = () => {
             )}
           </tbody>
         </table>
-        {addPatient && <AddPatient />}
+        {addPatient && <AddPatient refreshCall={fetchPatients} />}
         {editingPatient && (
           <div className="mt-6 p-4 border rounded bg-gray-50">
             <h3 className="text-lg font-semibold mb-4">Edit Patient</h3>

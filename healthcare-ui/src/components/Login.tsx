@@ -8,6 +8,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Login with:", { usernameOrEmail, password });
@@ -26,7 +27,12 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-300 via-amber-100 to-blue-400">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-300 via-amber-100 to-blue-400">
+        {/* Header */}
+        <h1 className="text-5xl font-extrabold text-gray-900 mb-30">
+          HealthCare Management System
+        </h1>
+
         <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
             Login
