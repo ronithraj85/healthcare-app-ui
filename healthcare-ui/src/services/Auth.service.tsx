@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// const API_AUTH_URL = "https://healthcare-clinic-app.onrender.com/api/auth";
+const API_AUTH_URL = "https://healthcare-clinic-app.onrender.com/api/auth";
 
-const API_AUTH_URL = "http://localhost:8080/api/auth";
 // Login service
 export const login = async (usernameOrEmail: string, password: string) => {
   try {
