@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
 import type DoctorResponseDto from "../../types/DoctorResponseDto";
 import { deleteDoctor, getAllDoctors } from "./doctor.service";
-import AddDoctorPage from "./AddDoctor";
+import DoctorCard from "./DoctorCard";
+import AddDoctorDrawer from "./AddDoctorDrawer";
+import EditDoctorModal from "./EditDoctorModal";
 
-const DoctorsPage = () => {
+const DoctorsPage: React.FC = () => {
   const [doctors, setDoctors] = useState<DoctorResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [addDoctor, setAddDoctor] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const roles = localStorage.getItem("roles");
 
+  const [editingDoctor, setEditingDoctor] = useState<DoctorResponseDto | null>(
+    null
+  );
+  const [formData, setFormData] = useState<Partial<DoctorResponseDto>>({});
+  const [doctorEdited, setDoctorEdited] = useState("");
+
+  // Fetch doctors
   const fetchDoctors = async () => {
     setLoading(true);
     try {
@@ -26,6 +35,7 @@ const DoctorsPage = () => {
     fetchDoctors();
   }, []);
 
+  // Remove doctor
   const removeDoctor = async (id: number) => {
     try {
       await deleteDoctor(id);
@@ -35,7 +45,28 @@ const DoctorsPage = () => {
     }
   };
 
-  // Filter doctors based on search term
+  // Edit doctor
+  const handleEdit = (doctor: DoctorResponseDto) => {
+    setEditingDoctor(doctor);
+    setFormData(doctor);
+  };
+
+  const handleSave = async () => {
+    if (!editingDoctor) return;
+    try {
+      await updateDoctor(editingDoctor.id, formData);
+      setDoctors((prev) =>
+        prev.map((d) => (d.id === editingDoctor.id ? { ...d, ...formData } : d))
+      );
+      setDoctorEdited("Doctor updated successfully!");
+      setEditingDoctor(null);
+      setTimeout(() => setDoctorEdited(""), 3000);
+    } catch (err) {
+      console.log("Error updating doctor:", err);
+    }
+  };
+
+  // Filter doctors
   const filteredDoctors = doctors.filter((doc) =>
     `${doc.name} ${doc.specialization}`
       .toLowerCase()
@@ -44,7 +75,7 @@ const DoctorsPage = () => {
 
   return (
     <div className="p-4 md:p-8">
-      {/* Hero Banner */}
+      {/* Banner */}
       <div className="relative mb-10">
         <img
           src="/images/doctors-banner.png"
@@ -58,14 +89,14 @@ const DoctorsPage = () => {
         </div>
       </div>
 
-      {/* Intro Text */}
+      {/* Intro */}
       <p className="text-gray-700 text-lg mb-8 text-center max-w-3xl mx-auto">
         Our healthcare system is powered by experienced doctors across multiple
         specializations. They are committed to providing compassionate care and
         ensuring the well-being of every patient.
       </p>
 
-      {/* Find a Doctor Search */}
+      {/* Search */}
       <div className="mb-6">
         <input
           type="text"
@@ -75,6 +106,13 @@ const DoctorsPage = () => {
           className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
+
+      {/* Alerts */}
+      {doctorEdited && (
+        <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">
+          {doctorEdited}
+        </div>
+      )}
 
       {/* Doctor Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
@@ -86,48 +124,23 @@ const DoctorsPage = () => {
           </p>
         ) : (
           filteredDoctors.map((doc) => (
-            <div
+            <DoctorCard
               key={doc.id}
-              className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition"
-            >
-              <img
-                src={
-                  doc.imageUrl ||
-                  "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=600&q=80"
-                }
-                alt="profile picture"
-                className="w-28 h-28 mx-auto rounded-full object-cover mb-4"
-              />
-              <h3 className="text-xl font-semibold text-gray-800">
-                {doc.name}
-              </h3>
-              <p className="text-gray-600">{doc.specialization}</p>
-
-              {/* Admin Actions */}
-              {roles?.includes("ROLE_ADMIN") && (
-                <div className="flex justify-center gap-2 mt-4">
-                  <button
-                    onClick={() => removeDoctor(doc.id)}
-                    className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded"
-                  >
-                    🗑 Remove
-                  </button>
-                  <button
-                    onClick={() => console.log("Edit doctor", doc)}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
-                  >
-                    ✏️ Edit
-                  </button>
-                </div>
-              )}
-            </div>
+              doctor={doc}
+              roles={roles}
+              onRemove={removeDoctor}
+              onEdit={handleEdit}
+            />
           ))
         )}
       </div>
 
       {/* Add Doctor Drawer */}
       {roles?.includes("ROLE_ADMIN") && addDoctor && (
-        <AddDoctorPage onDoctorAdded={fetchDoctors} />
+        <AddDoctorDrawer
+          onClose={() => setAddDoctor(false)}
+          refreshCall={fetchDoctors}
+        />
       )}
 
       {roles?.includes("ROLE_ADMIN") && (
@@ -139,6 +152,16 @@ const DoctorsPage = () => {
             ➕ Add New Doctor
           </button>
         </div>
+      )}
+
+      {/* Edit Doctor Modal */}
+      {editingDoctor && (
+        <EditDoctorModal
+          formData={formData}
+          setFormData={setFormData}
+          handleSave={handleSave}
+          closeEditModal={() => setEditingDoctor(null)}
+        />
       )}
     </div>
   );

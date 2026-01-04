@@ -1,8 +1,8 @@
 import axios from "axios";
 import type { PatientResponseDto } from "../../types/PatientResponseDto";
 
-// const API_PATIENT_URL ="https://healthcare-clinic-app.onrender.com/api/patients";
-const API_PATIENT_URL = "http://localhost:8080/api/patients";
+const API_PATIENT_URL ="https://healthcare-clinic-app.onrender.com/api/patients";
+// const API_PATIENT_URL = "http://localhost:8080/api/patients";
 
 // Get all the patients
 export const getPatients = async (): Promise<PatientResponseDto[]> => {

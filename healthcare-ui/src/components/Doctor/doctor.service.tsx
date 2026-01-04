@@ -1,8 +1,8 @@
 import axios from "axios";
 import type DoctorResponseDto from "../../types/DoctorResponseDto";
 
-// const API_DOCTOR_URL =  "https://healthcare-clinic-app.onrender.com/api/doctors";
-const API_DOCTOR_URL = "http://localhost:8080/api/doctors";
+const API_DOCTOR_URL =  "https://healthcare-clinic-app.onrender.com/api/doctors";
+// const API_DOCTOR_URL = "http://localhost:8080/api/doctors";
 
 //Adding a doctor
 export const registerDoctor = async (
