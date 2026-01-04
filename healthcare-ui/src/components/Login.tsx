@@ -21,6 +21,8 @@ const Login: React.FC = () => {
       console.error("Invalid credentials or server error", err);
       if (err.message === "Network Error") {
         setError("Backend is down, Please try again later.");
+      } else {
+        setError("Invalid credentials, please try again!");
       }
     }
   };

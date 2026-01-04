@@ -6,26 +6,28 @@ import DoctorsPage from "./Doctor/DoctorsPage";
 import UsersPage from "./Users/UsersPage";
 import AppointmentsPage from "./Appointments/AppointmentsPage";
 
-// Utility to decode JWT payload
-function parseJwt(
-  token: string
-): { roles?: string[]; authorities?: string[] } | null {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(window.atob(base64));
-  } catch {
-    return null;
-  }
-}
-
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("");
+
+  // Utility to decode JWT payload
+  function parseJwt(
+    token: string
+  ): { roles?: string[]; authorities?: string[] } | null {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      return JSON.parse(window.atob(base64));
+    } catch {
+      return null;
+    }
+  }
+
   const [roles] = useState<string[]>(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       const decoded = parseJwt(token);
+      localStorage.setItem("roles", decoded?.roles || null);
       return decoded?.roles ?? decoded?.authorities ?? [];
     }
     return [];
@@ -33,6 +35,7 @@ const HomePage: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("roles");
     navigate("/");
   };
 
@@ -53,13 +56,6 @@ const HomePage: React.FC = () => {
           {/* Admin-only options */}
           {roles.includes("ROLE_ADMIN") && (
             <>
-              {/* <button
-                onClick={() => setActiveSection("admin")}
-                className="px-4 py-2 hover:bg-blue-700 rounded text-white"
-              >
-                Add Admin
-              </button> */}
-
               <button
                 onClick={() => setActiveSection("doctors")}
                 className="hover:bg-blue-700 px-3 py-2 rounded"
@@ -89,13 +85,26 @@ const HomePage: React.FC = () => {
 
           {/* User + Admin can schedule appointments */}
           {roles.includes("ROLE_USER") && (
-            // || roles.includes("ROLE_ADMIN")
-            <button
-              onClick={() => setActiveSection("appointments")}
-              className="hover:bg-blue-700 px-3 py-2 rounded"
-            >
-              Appointments
-            </button>
+            <>
+              <button
+                onClick={() => setActiveSection("doctors")}
+                className="hover:bg-blue-700 px-3 py-2 rounded"
+              >
+                Doctors
+              </button>
+              <button
+                onClick={() => setActiveSection("patients")}
+                className="hover:bg-blue-700 px-3 py-2 rounded"
+              >
+                Patients
+              </button>
+              <button
+                onClick={() => setActiveSection("appointments")}
+                className="hover:bg-blue-700 px-3 py-2 rounded"
+              >
+                Appointments
+              </button>
+            </>
           )}
 
           <button
@@ -121,7 +130,6 @@ const HomePage: React.FC = () => {
       )}
       {/* 👇 Conditional rendering based on activeSection */}
       {activeSection === "users" && <UsersPage />}
-      {/* {activeSection === "admin" && <AddAdminPage />} */}
       {activeSection === "doctors" && <DoctorsPage />}
       {activeSection === "patients" && <PatientsPage />}
       {activeSection === "appointments" && <AppointmentsPage />}
