@@ -92,12 +92,7 @@ const HomePage: React.FC = () => {
               >
                 Doctors
               </button>
-              <button
-                onClick={() => setActiveSection("patients")}
-                className="hover:bg-blue-700 px-3 py-2 rounded"
-              >
-                Patients
-              </button>
+
               <button
                 onClick={() => setActiveSection("appointments")}
                 className="hover:bg-blue-700 px-3 py-2 rounded"
