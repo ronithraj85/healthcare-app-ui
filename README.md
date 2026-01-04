@@ -30,5 +30,5 @@ Live Demo: https://healthcare-app-ui-ivory.vercel.app/
    git clone https://github.com/your-username/healthcare-ui.git
 
 Once the repo is cloned,
-Do , npm install and npm run dev
+Do npm install and npm run dev
 UI will be available at http://localhost:5173.
