@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AiFillHome, AiOutlineUser, AiOutlineTeam } from "react-icons/ai";
-import { MdLocalHospital, MdEventAvailable } from "react-icons/md";
+import Navbar from "./Navbar";
+import HeroBanner from "./HeroBanner";
+import SummaryCards from "./SummaryCards";
 import PatientsPage from "./Patients/PatientsPage";
 import DoctorsPage from "./Doctor/DoctorsPage";
 import UsersPage from "./Users/UsersPage";
@@ -10,6 +11,7 @@ import AppointmentsPage from "./Appointments/AppointmentsPage";
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("");
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   function parseJwt(
     token: string
@@ -42,60 +44,67 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
-      <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-4 flex justify-between items-center shadow-md">
-        <h1 className="text-2xl font-bold tracking-wide">Healthcare System</h1>
-        <div className="flex items-center gap-4">
+      <Navbar
+        roles={roles}
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        handleLogout={handleLogout}
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+      />
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="sm:hidden bg-blue-700 text-white flex flex-col gap-2 px-4 py-3">
           <button
-            onClick={() => setActiveSection("")}
-            className={`flex items-center gap-2 px-4 py-2 rounded transition ${
-              activeSection === "" ? "bg-blue-900" : "hover:bg-blue-700"
+            onClick={() => {
+              setActiveSection("");
+              setMenuOpen(false);
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded ${
+              activeSection === "" ? "bg-blue-900" : "hover:bg-blue-600"
             }`}
           >
-            <AiFillHome className="text-xl" />
-            <span>Home</span>
+            Home
           </button>
 
           {roles.includes("ROLE_ADMIN") && (
             <>
               <button
-                onClick={() => setActiveSection("doctors")}
-                className={`flex items-center gap-2 px-3 py-2 rounded transition ${
-                  activeSection === "doctors"
-                    ? "bg-blue-900"
-                    : "hover:bg-blue-700"
-                }`}
+                onClick={() => {
+                  setActiveSection("doctors");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600"
               >
-                <MdLocalHospital /> Doctors
+                Doctors
               </button>
               <button
-                onClick={() => setActiveSection("patients")}
-                className={`flex items-center gap-2 px-3 py-2 rounded transition ${
-                  activeSection === "patients"
-                    ? "bg-blue-900"
-                    : "hover:bg-blue-700"
-                }`}
+                onClick={() => {
+                  setActiveSection("patients");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600"
               >
-                <AiOutlineUser /> Patients
+                Patients
               </button>
               <button
-                onClick={() => setActiveSection("users")}
-                className={`flex items-center gap-2 px-3 py-2 rounded transition ${
-                  activeSection === "users"
-                    ? "bg-blue-900"
-                    : "hover:bg-blue-700"
-                }`}
+                onClick={() => {
+                  setActiveSection("users");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600"
               >
-                <AiOutlineTeam /> Users
+                Users
               </button>
               <button
-                onClick={() => setActiveSection("appointments")}
-                className={`flex items-center gap-2 px-3 py-2 rounded transition ${
-                  activeSection === "appointments"
-                    ? "bg-blue-900"
-                    : "hover:bg-blue-700"
-                }`}
+                onClick={() => {
+                  setActiveSection("appointments");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600"
               >
-                <MdEventAvailable /> Appointments
+                Appointments
               </button>
             </>
           )}
@@ -103,24 +112,22 @@ const HomePage: React.FC = () => {
           {roles.includes("ROLE_USER") && (
             <>
               <button
-                onClick={() => setActiveSection("doctors")}
-                className={`flex items-center gap-2 px-3 py-2 rounded transition ${
-                  activeSection === "doctors"
-                    ? "bg-blue-900"
-                    : "hover:bg-blue-700"
-                }`}
+                onClick={() => {
+                  setActiveSection("doctors");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600"
               >
-                <MdLocalHospital /> Doctors
+                Doctors
               </button>
               <button
-                onClick={() => setActiveSection("appointments")}
-                className={`flex items-center gap-2 px-3 py-2 rounded transition ${
-                  activeSection === "appointments"
-                    ? "bg-blue-900"
-                    : "hover:bg-blue-700"
-                }`}
+                onClick={() => {
+                  setActiveSection("appointments");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600"
               >
-                <MdEventAvailable /> Appointments
+                Appointments
               </button>
             </>
           )}
@@ -132,44 +139,13 @@ const HomePage: React.FC = () => {
             Logout
           </button>
         </div>
-      </nav>
+      )}
 
       {/* Main Content */}
       {activeSection === "" && (
-        <div className="p-8">
-          {/* Hero Banner */}
-          <div className="bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-lg shadow-lg p-10 mb-8 text-center">
-            <h2 className="text-3xl font-bold mb-2">
-              Welcome to the Healthcare System
-            </h2>
-            <p className="text-lg">
-              Manage doctors, patients, users, and appointments with ease.
-            </p>
-          </div>
-
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white shadow-md rounded-lg p-6 text-center">
-              <MdLocalHospital className="text-blue-600 text-3xl mx-auto mb-2" />
-              <h3 className="text-lg font-semibold">Doctors</h3>
-              <p className="text-gray-600">Manage healthcare providers</p>
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-6 text-center">
-              <AiOutlineUser className="text-blue-600 text-3xl mx-auto mb-2" />
-              <h3 className="text-lg font-semibold">Patients</h3>
-              <p className="text-gray-600">Track patient records</p>
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-6 text-center">
-              <AiOutlineTeam className="text-blue-600 text-3xl mx-auto mb-2" />
-              <h3 className="text-lg font-semibold">Users</h3>
-              <p className="text-gray-600">Administer system users</p>
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-6 text-center">
-              <MdEventAvailable className="text-blue-600 text-3xl mx-auto mb-2" />
-              <h3 className="text-lg font-semibold">Appointments</h3>
-              <p className="text-gray-600">Schedule and manage visits</p>
-            </div>
-          </div>
+        <div className="p-6 sm:p-8">
+          <HeroBanner />
+          <SummaryCards role={roles} setActiveSection={setActiveSection} />
         </div>
       )}
 
