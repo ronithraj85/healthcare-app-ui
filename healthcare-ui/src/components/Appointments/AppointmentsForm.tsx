@@ -28,7 +28,6 @@ export default function AppointmentsForm() {
         console.error("Error fetching doctors/patients:", err);
       }
     };
-
     fetchData();
   }, []);
 
@@ -48,11 +47,13 @@ export default function AppointmentsForm() {
 
   return (
     <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
-      <h2 className="text-xl font-bold mb-4">Schedule Appointment</h2>
+      <h2 className="text-xl font-bold mb-6 text-blue-700 text-center">
+        Schedule Appointment
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Patient Dropdown */}
         <div>
-          <label className="block text-sm font-medium">Patient</label>
+          <label className="block text-sm font-medium mb-1">Patient</label>
           <select
             name="patientId"
             value={form.patientId}
@@ -63,21 +64,18 @@ export default function AppointmentsForm() {
             {Array.isArray(patients) &&
             patients.filter((pat) => pat.active).length > 0 ? (
               <>
-                {" "}
-                <option value="">Select Patient</option>{" "}
+                <option value="">Select Patient</option>
                 {patients
                   .filter((pat) => pat.active)
                   .map((p) => (
                     <option key={p.id} value={p.id}>
-                      {" "}
-                      {p.name}{" "}
+                      {p.name}
                     </option>
-                  ))}{" "}
+                  ))}
               </>
             ) : (
               <option value="" disabled>
-                {" "}
-                No patients available{" "}
+                No patients available
               </option>
             )}
           </select>
@@ -85,7 +83,7 @@ export default function AppointmentsForm() {
 
         {/* Doctor Dropdown */}
         <div>
-          <label className="block text-sm font-medium">Doctor</label>
+          <label className="block text-sm font-medium mb-1">Doctor</label>
           <select
             name="doctorId"
             value={form.doctorId}
@@ -104,7 +102,7 @@ export default function AppointmentsForm() {
 
         {/* Date & Time */}
         <div>
-          <label className="block text-sm font-medium">Start Time</label>
+          <label className="block text-sm font-medium mb-1">Start Time</label>
           <input
             type="datetime-local"
             name="startTime"
@@ -117,7 +115,7 @@ export default function AppointmentsForm() {
 
         {/* Duration */}
         <div>
-          <label className="block text-sm font-medium">
+          <label className="block text-sm font-medium mb-1">
             Duration (minutes)
           </label>
           <input
@@ -134,7 +132,7 @@ export default function AppointmentsForm() {
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium">Notes</label>
+          <label className="block text-sm font-medium mb-1">Notes</label>
           <textarea
             name="notes"
             value={form.notes}
