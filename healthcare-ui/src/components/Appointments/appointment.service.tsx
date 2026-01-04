@@ -1,8 +1,8 @@
 import axios from "axios";
 import type AppointmentResponseDto from "../../types/AppointmentResponseDto";
 
-const API_APPOINTMENT_URL =
-  "https://healthcare-clinic-app.onrender.com/api/appointments";
+// const API_APPOINTMENT_URL ="https://healthcare-clinic-app.onrender.com/api/appointments";
+const API_APPOINTMENT_URL = "http://localhost:8080/api/appointments";
 
 export const getAllAppointments = async (): Promise<
   AppointmentResponseDto[]
