@@ -13,8 +13,8 @@ const DoctorsPage = () => {
   const fetchDoctors = async () => {
     setLoading(true);
     try {
-      const doctors = await getAllDoctors();
-      setDoctors(doctors);
+      const docs = await getAllDoctors();
+      setDoctors(docs);
     } catch {
       console.log("Failed to get all the doctors.");
     } finally {
@@ -26,8 +26,8 @@ const DoctorsPage = () => {
     fetchDoctors();
   }, []);
 
-  const removeDoctor = async (id: any) => {
-    try {
+  const removeDoctor = async (id: number) => {
+    try {~
       await deleteDoctor(id);
       setDoctors((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
     } catch {
@@ -76,127 +76,68 @@ const DoctorsPage = () => {
         />
       </div>
 
-      {/* Doctor Showcase */}
-      {/* Doctor Showcase */}
-      {/* Doctor Showcase */}
+      {/* Doctor Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-        {filteredDoctors.length === 0 ? (
+        {loading ? (
+          <p className="text-center col-span-3">Loading doctors...</p>
+        ) : filteredDoctors.length === 0 ? (
           <p className="text-center text-gray-500 font-medium col-span-3">
             No doctors found.
           </p>
         ) : (
-          filteredDoctors.map((doc, idx) => (
+          filteredDoctors.map((doc) => (
             <div
-              key={idx}
+              key={doc.id}
               className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition"
             >
               <img
-                src={doc.imageUrl}
-                alt={"profile pircture"}
+                src={
+                  doc.imageUrl ||
+                  "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=600&q=80"
+                }
+                alt="profile picture"
                 className="w-28 h-28 mx-auto rounded-full object-cover mb-4"
               />
               <h3 className="text-xl font-semibold text-gray-800">
                 {doc.name}
               </h3>
               <p className="text-gray-600">{doc.specialization}</p>
+
+              {/* Admin Actions */}
+              {roles?.includes("ROLE_ADMIN") && (
+                <div className="flex justify-center gap-2 mt-4">
+                  <button
+                    onClick={() => removeDoctor(doc.id)}
+                    className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded"
+                  >
+                    🗑 Remove
+                  </button>
+                  <button
+                    onClick={() => console.log("Edit doctor", doc)}
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
+                  >
+                    ✏️ Edit
+                  </button>
+                </div>
+              )}
             </div>
           ))
         )}
       </div>
 
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-        {[
-          {
-            name: "Dr. Sarah Johnson",
-            role: "Cardiologist",
-            img: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-          },
-          {
-            name: "Dr. Michael Lee",
-            role: "Neurologist",
-            img: "https://images.unsplash.com/photo-1606813909026-d5d2a5f6b6f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-          },
-          {
-            name: "Dr. Emily Davis",
-            role: "Pediatrician",
-            img: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-          },
-        ].map((doc, idx) => (
-          <div
-            key={idx}
-            className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition"
-          >
-            <img
-              src={doc.img}
-              alt={doc.name}
-              className="w-28 h-28 mx-auto rounded-full object-cover mb-4"
-            />
-            <h3 className="text-xl font-semibold text-gray-800">{doc.name}</h3>
-            <p className="text-gray-600">{doc.role}</p>
-          </div>
-        ))}
-      </div> */}
+      {/* Add Doctor Drawer */}
+      {roles?.includes("ROLE_ADMIN") && addDoctor && (
+        <AddDoctorPage onDoctorAdded={fetchDoctors} />
+      )}
 
-      {/* Header + Add Button -- this is only for admin */}
       {roles?.includes("ROLE_ADMIN") && (
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">List of Doctors</h2>
+        <div className="flex justify-center mt-6">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded shadow-md transition"
             onClick={() => setAddDoctor(true)}
           >
             ➕ Add New Doctor
           </button>
-        </div>
-      )}
-      {/* Doctors Table */}
-      {roles?.includes("ROLE_ADMIN") && (
-        <div className="overflow-x-auto shadow-lg rounded-lg">
-          {loading && (
-            <p className="text-center py-4 text-blue-600 font-medium">
-              Fetching Doctors List...
-            </p>
-          )}
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead className="bg-blue-600 text-white">
-              <tr>
-                <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Specialization</th>
-                <th className="py-3 px-4 text-left">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredDoctors.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="text-center py-6 text-gray-500 font-medium"
-                  >
-                    No doctors found.
-                  </td>
-                </tr>
-              ) : (
-                filteredDoctors.map((doctor, idx) => (
-                  <tr
-                    key={idx}
-                    className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                  >
-                    <td className="py-3 px-4 font-medium">{doctor.name}</td>
-                    <td className="py-3 px-4">{doctor.specialization}</td>
-                    <td className="py-3 px-4 space-x-2">
-                      <button
-                        onClick={() => removeDoctor(doctor.id)}
-                        className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition"
-                      >
-                        🗑 Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-          {addDoctor && <AddDoctorPage onDoctorAdded={fetchDoctors} />}
         </div>
       )}
     </div>
