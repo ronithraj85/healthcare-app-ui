@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { deletePatient, getPatients, updatePatient } from "./patient.service";
 import type { PatientResponseDto } from "../../types/PatientResponseDto";
 import AddPatient from "./AddPatient";
+import EditPatientModal from "./EditPatientModal";
 
 const PatientsPage: React.FC = () => {
   const [addPatient, setAddPatient] = useState(false);
@@ -14,7 +15,7 @@ const PatientsPage: React.FC = () => {
   const [formData, setFormData] = useState<Partial<PatientResponseDto>>({});
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     try {
       setLoading(true);
       const pats = await getPatients();
@@ -24,11 +25,11 @@ const PatientsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [fetchPatients]);
 
   const handleDelete = async (id: number) => {
     try {
@@ -63,13 +64,28 @@ const PatientsPage: React.FC = () => {
     }
   };
 
-  // Filter for both showcase and table
+  // Filter for showcase
   const activePatients = patients.filter((p) => p.active);
   const filteredPatients = activePatients.filter((p) =>
     `${p.name} ${p.email} ${p.mobile}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
+
+  // Close handlers (overlay click + Esc key)
+  const closeEditModal = () => setEditingPatient(null);
+  const closeAddDrawer = () => setAddPatient(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (editingPatient) closeEditModal();
+        if (addPatient) closeAddDrawer();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [editingPatient, addPatient]);
 
   return (
     <div className="p-4 md:p-8">
@@ -80,7 +96,6 @@ const PatientsPage: React.FC = () => {
           alt="Our Valued Patients"
           className="w-full h-[30rem] object-cover object-top rounded-lg shadow-lg"
         />
-
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent rounded-lg flex items-center justify-center">
           <h1 className="text-white text-3xl md:text-5xl font-bold text-center px-4">
             OUR VALUED PATIENTS
@@ -94,7 +109,7 @@ const PatientsPage: React.FC = () => {
         profiles and manage records to support every health journey.
       </p>
 
-      {/* Find a Patient Search */}
+      {/* Search + Add */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <input
           type="text"
@@ -111,42 +126,6 @@ const PatientsPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Patient Showcase Grid (uses filteredPatients) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-        {loading ? (
-          <p className="text-center py-4 col-span-3">Loading patients...</p>
-        ) : filteredPatients.length === 0 ? (
-          <p className="text-center text-gray-500 font-medium col-span-3">
-            No patients to showcase.
-          </p>
-        ) : (
-          filteredPatients.slice(0, 6).map((patient) => (
-            <div
-              key={patient.id}
-              className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition"
-            >
-              <img
-                src={
-                  patient.imageUrl ||
-                  "https://images.unsplash.com/photo-1544723795-3fb6469f5ae5?auto=format&fit=crop&w=600&q=80"
-                }
-                alt={patient.name}
-                className="w-28 h-28 mx-auto rounded-full object-cover mb-4"
-              />
-              <h3 className="text-xl font-semibold text-gray-800">
-                {patient.name}
-              </h3>
-              <p className="text-gray-600">{patient.email}</p>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">All Patients</h2>
-      </div>
-
       {/* Alerts */}
       {patientDeleted && (
         <div className="mb-4 p-3 bg-orange-100 text-orange-600 rounded">
@@ -159,118 +138,63 @@ const PatientsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Patients Table (filtered) */}
-      <div className="overflow-x-auto shadow-lg rounded-lg">
-        {loading && (
-          <p className="text-center py-4">Fetching Patients List...</p>
+      {/* Patient Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+        {loading ? (
+          <p className="text-center py-4 col-span-3">Loading patients...</p>
+        ) : filteredPatients.length === 0 ? (
+          <p className="text-center text-gray-500 font-medium col-span-3">
+            No patients to showcase.
+          </p>
+        ) : (
+          filteredPatients.map((pat) => (
+            <PatientsPage
+              patient={pat}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
+            />
+          ))
         )}
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead className="bg-blue-600 text-white">
-            <tr>
-              <th className="py-3 px-4 text-left">Name</th>
-              <th className="py-3 px-4 text-left">Email</th>
-              <th className="py-3 px-4 text-left">Mobile</th>
-              <th className="py-3 px-4 text-left">DOB</th>
-              <th className="py-3 px-4 text-left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!loading && filteredPatients.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center py-4 text-gray-600">
-                  No patients found
-                </td>
-              </tr>
-            ) : (
-              filteredPatients.map((patient, idx) => (
-                <tr
-                  key={patient.id}
-                  className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                >
-                  <td className="py-3 px-4">{patient.name}</td>
-                  <td className="py-3 px-4">{patient.email}</td>
-                  <td className="py-3 px-4">{patient.mobile}</td>
-                  <td className="py-3 px-4">{patient.dateOfBirth}</td>
-                  <td className="py-3 px-4 space-x-2">
-                    <button
-                      onClick={() => handleDelete(patient.id)}
-                      className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded"
-                    >
-                      🗑 Delete
-                    </button>
-                    <button
-                      onClick={() => handleEdit(patient)}
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
-                    >
-                      ✏️ Edit
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
       </div>
 
-      {/* Add Patient Modal */}
-      {addPatient && <AddPatient refreshCall={fetchPatients} />}
-
-      {/* Edit Drawer */}
-      {editingPatient && (
-        <div className="mt-6 p-4 border rounded bg-gray-50">
-          <h3 className="text-lg font-semibold mb-4">Edit Patient</h3>
-          <div className="flex flex-wrap gap-2">
-            <input
-              type="text"
-              value={formData.name || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder="Name"
-              className="border p-2 rounded"
-            />
-            <input
-              type="email"
-              value={formData.email || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              placeholder="Email"
-              className="border p-2 rounded"
-            />
-            <input
-              type="text"
-              value={formData.mobile || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, mobile: e.target.value })
-              }
-              placeholder="Mobile"
-              className="border p-2 rounded"
-            />
-            <input
-              type="date"
-              value={formData.dateOfBirth || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, dateOfBirth: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-          </div>
-          <div className="mt-4">
-            <button
-              onClick={handleSave}
-              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => setEditingPatient(null)}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded ml-2"
-            >
-              Cancel
-            </button>
+      {/* Add Patient Slider */}
+      {addPatient && (
+        <div
+          className="fixed inset-0 z-50 flex justify-end"
+          aria-modal="true"
+          role="dialog"
+          onClick={closeAddDrawer}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+          {/* Drawer */}
+          <div
+            className="relative bg-white w-full sm:w-[30rem] h-full shadow-xl p-6 transform transition-transform duration-300 ease-out translate-x-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">➕ Add Patient</h2>
+              <button
+                onClick={closeAddDrawer}
+                className="text-gray-600 hover:text-gray-900"
+                aria-label="Close add patient drawer"
+              >
+                ✖
+              </button>
+            </div>
+            <AddPatient refreshCall={fetchPatients} />
           </div>
         </div>
+      )}
+
+      {/* Edit Patient Modal */}
+      {editingPatient && (
+        <EditPatientModal
+          formData={formData}
+          setFormData={setFormData}
+          handleSave={handleSave}
+          closeEditModal={() => setEditingPatient(null)}
+        />
       )}
     </div>
   );
