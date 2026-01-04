@@ -27,7 +27,7 @@ const DoctorsPage = () => {
   }, []);
 
   const removeDoctor = async (id: number) => {
-    try {~
+    try {
       await deleteDoctor(id);
       setDoctors((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
     } catch {
