@@ -3,6 +3,7 @@ import { deletePatient, getPatients, updatePatient } from "./patient.service";
 import type { PatientResponseDto } from "../../types/PatientResponseDto";
 import AddPatient from "./AddPatient";
 import EditPatientModal from "./EditPatientModal";
+import AddSlider from "../common/AddSlider";
 
 const PatientsPage: React.FC = () => {
   const [addPatient, setAddPatient] = useState(false);
@@ -159,31 +160,12 @@ const PatientsPage: React.FC = () => {
 
       {/* Add Patient Slider */}
       {addPatient && (
-        <div
-          className="fixed inset-0 z-50 flex justify-end"
-          aria-modal="true"
-          role="dialog"
-          onClick={closeAddDrawer}
-        >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          {/* Drawer */}
-          <div
-            className="relative bg-white w-full sm:w-[30rem] h-full shadow-xl p-6 transform transition-transform duration-300 ease-out translate-x-0"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">➕ Add Patient</h2>
-              <button
-                onClick={closeAddDrawer}
-                className="text-gray-600 hover:text-gray-900"
-                aria-label="Close add patient drawer"
-              >
-                ✖
-              </button>
-            </div>
-            <AddPatient refreshCall={fetchPatients} />
-          </div>
+        <div>
+          <AddSlider
+            onClose={() => setAddPatient(false)}
+            addHeader="Add Patient"
+            sliderComponent={<AddPatient refreshCall={fetchPatients} />}
+          />
         </div>
       )}
 

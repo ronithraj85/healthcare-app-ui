@@ -26,7 +26,7 @@ export default function AddDoctorPage({ onDoctorAdded }) {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start pt-10">
-      <h2 className="text-2xl font-bold text-blue-700 mb-6">Add Admin</h2>
+      {/* <h2 className="text-2xl font-bold text-blue-700 mb-6">Add Admin</h2> */}
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 w-full max-w-md space-y-4"
@@ -51,7 +51,9 @@ export default function AddDoctorPage({ onDoctorAdded }) {
         />
         <button
           type="submit"
-          className="bg-gradient-to-r from-green-300 to-blue-500 text-white font-semibold px-4 py-2 rounded w-full hover:opacity-90"
+          className="bg-gradient-to-r from-green-300
+           to-blue-500 text-white font-semibold px-4 py-2 rounded w-full
+            hover:opacity-90"
         >
           Add Doctor
         </button>

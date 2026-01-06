@@ -4,6 +4,7 @@ import type UserResponseDto from "../../types/UserResponseDto";
 import AddAdminPage from "./AddAdminPage";
 import EditUserModal from "./EditUserModal";
 import UserCard from "./UserCard";
+import AddSlider from "../common/AddSlider";
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<UserResponseDto[]>([]);
@@ -139,7 +140,13 @@ const UsersPage: React.FC = () => {
       </div>
 
       {/* Add User Modal */}
-      {addUser && <AddAdminPage onClose={() => setAddUser(false)} />}
+      {addUser && (
+        <AddSlider
+          onClose={() => setAddUser(false)}
+          addHeader={"Add USer"}
+          sliderComponent={<AddAdminPage />}
+        />
+      )}
 
       {/* Edit User Modal */}
       {editingUser && (

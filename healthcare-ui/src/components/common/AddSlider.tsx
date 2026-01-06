@@ -1,14 +1,15 @@
 import React from "react";
-import AddDoctorPage from "./AddDoctor";
 
 interface AddDoctorDrawerProps {
   onClose: () => void;
-  refreshCall: () => void;
+  addHeader: string;
+  sliderComponent: React.ReactNode;
 }
 
-const AddDoctorDrawer: React.FC<AddDoctorDrawerProps> = ({
+const AddSlider: React.FC<AddDoctorDrawerProps> = ({
   onClose,
-  refreshCall,
+  addHeader,
+  sliderComponent,
 }) => {
   return (
     <div
@@ -23,7 +24,7 @@ const AddDoctorDrawer: React.FC<AddDoctorDrawerProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">➕ Add Doctor</h2>
+          <p className="text-xl font-bold">➕ {addHeader}</p>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900"
@@ -31,10 +32,10 @@ const AddDoctorDrawer: React.FC<AddDoctorDrawerProps> = ({
             ✖
           </button>
         </div>
-        <AddDoctorPage onDoctorAdded={refreshCall} />
+        {sliderComponent}
       </div>
     </div>
   );
 };
 
-export default AddDoctorDrawer;
+export default AddSlider;
