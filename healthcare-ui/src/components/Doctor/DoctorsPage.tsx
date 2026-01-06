@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import type DoctorResponseDto from "../../types/DoctorResponseDto";
 import { deleteDoctor, getAllDoctors } from "./doctor.service";
 import DoctorCard from "./DoctorCard";
-import AddDoctorDrawer from "./AddDoctorDrawer";
+import AddDoctorDrawer from "../common/AddSlider";
 import EditDoctorModal from "./EditDoctorModal";
+import AddDoctorPage from "./AddDoctor";
+import AddSlider from "../common/AddSlider";
 
 const DoctorsPage: React.FC = () => {
   const [doctors, setDoctors] = useState<DoctorResponseDto[]>([]);
@@ -137,9 +139,10 @@ const DoctorsPage: React.FC = () => {
 
       {/* Add Doctor Drawer */}
       {roles?.includes("ROLE_ADMIN") && addDoctor && (
-        <AddDoctorDrawer
+        <AddSlider
           onClose={() => setAddDoctor(false)}
-          refreshCall={fetchDoctors}
+          addHeader="Add Doctor"
+          sliderComponent={<AddDoctorPage onDoctorAdded={fetchDoctors} />}
         />
       )}
 
