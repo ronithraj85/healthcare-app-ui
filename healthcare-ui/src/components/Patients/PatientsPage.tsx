@@ -4,6 +4,7 @@ import type { PatientResponseDto } from "../../types/PatientResponseDto";
 import AddPatient from "./AddPatient";
 import EditPatientModal from "./EditPatientModal";
 import AddSlider from "../common/AddSlider";
+import PatientCard from "./PatientCard";
 
 const PatientsPage: React.FC = () => {
   const [addPatient, setAddPatient] = useState(false);
@@ -149,10 +150,15 @@ const PatientsPage: React.FC = () => {
           </p>
         ) : (
           filteredPatients.map((pat) => (
-            <PatientsPage
+            // <PatientsPage
+            //   patient={pat}
+            //   handleDelete={handleDelete}
+            //   handleEdit={handleEdit}
+            // />
+            <PatientCard
               patient={pat}
-              handleDelete={handleDelete}
               handleEdit={handleEdit}
+              handleDelete={handleDelete}
             />
           ))
         )}

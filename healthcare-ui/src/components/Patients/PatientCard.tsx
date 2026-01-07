@@ -1,6 +1,6 @@
 import React from "react";
 
-const PatientCard = () => {
+const PatientCard = ({ patient, handleEdit, handleDelete }) => {
   return (
     <div
       key={patient.id}
